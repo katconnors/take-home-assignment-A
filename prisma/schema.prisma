@@ -26,7 +26,7 @@ model Query {
   description?   String
   createdAt Date
   updatedAt Date
-  status String @default(["OPEN","RESOLVED])
+  status String @default(["OPEN","RESOLVED"])
   formDataId String 
   formData FormData @relation(fields:[formDataId], references:[id])
   
