@@ -1,94 +1,85 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   MantineReactTable,
   useMantineReactTable,
   type MRT_ColumnDef,
 } from 'mantine-react-table';
 
-type Person = {
-  name: {
-    firstName: string;
-    lastName: string;
-  };
-  address: string;
-  city: string;
-  state: string;
+import { Text, Modal, Stack, Button, Tooltip } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faExclamation, faPlus } from '@fortawesome/free-solid-svg-icons'
+
+
+type Info = {
+  question: string;
+  answer: string;
+  queries: string;
 };
 
-//nested data is ok, see accessorKeys in ColumnDef below
-const data: Person[] = [
-  {
-    name: {
-      firstName: 'Zachary',
-      lastName: 'Davis',
-    },
-    address: '261 Battle Ford',
-    city: 'Columbus',
-    state: 'Ohio',
-  },
-  {
-    name: {
-      firstName: 'Robert',
-      lastName: 'Smith',
-    },
-    address: '566 Brakus Inlet',
-    city: 'Westerville',
-    state: 'West Virginia',
-  },
-  {
-    name: {
-      firstName: 'Kevin',
-      lastName: 'Yan',
-    },
-    address: '7777 Kuhic Knoll',
-    city: 'South Linda',
-    state: 'West Virginia',
-  },
-  {
-    name: {
-      firstName: 'John',
-      lastName: 'Upton',
-    },
-    address: '722 Emie Stream',
-    city: 'Huntington',
-    state: 'Washington',
-  },
-  {
-    name: {
-      firstName: 'Nathan',
-      lastName: 'Harris',
-    },
-    address: '1 Kuhic Knoll',
-    city: 'Ohiowa',
-    state: 'Nebraska',
-  },
-];
+
+type FormDataResponse = {
+  data: {
+    formData: Info[];
+  };
+};
 
 export default function Home() {
   //should be memoized or stable
-  const columns = useMemo<MRT_ColumnDef<Person>[]>(
-    () => [
+  const [opened, setOpened] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<Info | null>(null);
+  const [form,setForm] = useState<Info[]>([]);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8080/form-data')
+      .then((res) => res.json())
+      .then((data: FormDataResponse) => {
+        const questionAnswer = data.data.formData;
+        setForm(questionAnswer);
+      })
+      .catch(console.error);
+  }, []);
+
+  
+  const columns = useMemo<MRT_ColumnDef<Info>[]>(() => [
       {
-        accessorKey: 'name.firstName', //access nested data with dot notation
-        header: 'First Name',
+        accessorKey:'question', 
+        header: 'Question',
       },
       {
-        accessorKey: 'name.lastName',
-        header: 'Last Name',
+        accessorKey: 'answer',
+        header: 'Answer',
       },
+   
       {
-        accessorKey: 'address', //normal accessorKey
-        header: 'Address',
-      },
-      {
-        accessorKey: 'city',
-        header: 'City',
-      },
-      {
-        accessorKey: 'state',
-        header: 'State',
+        header: 'Queries',
+        Cell: ({ row }) => (<div style= {{backgroundColor:'#d4fcd4',
+          width: '100%',
+          height: '100%',
+          padding: '0.5rem',
+          boxSizing: 'border-box',}}>
+            
+          <button >
+          <FontAwesomeIcon icon={faPlus} />
+          </button>
+          <button >
+          <FontAwesomeIcon icon={faCheck} />
+          </button>
+          <br></br>
+          <Tooltip label="View/update query">
+          <button onClick={
+            () => {
+              setSelectedRow(row.original);
+              setOpened(true);
+            }
+          }>
+          <FontAwesomeIcon icon={faExclamation} />
+          </button>
+    </Tooltip>
+          
+          </div>
+        ),
       },
     ],
     [],
@@ -96,8 +87,33 @@ export default function Home() {
 
   const table = useMantineReactTable({
     columns,
-    data, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    data: form, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
   });
 
-  return <MantineReactTable table={table}/>
+  return (
+    <>
+      <MantineReactTable table={table} />
+
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title={`Query | ${selectedRow?.question}`}
+      >
+        {selectedRow && (
+          <Stack>
+            
+            <Text>query status</Text>
+            <Text>created on</Text>
+            <Text><strong>Queries:</strong> {selectedRow.queries}</Text>
+            <button >
+          Update Query 
+          </button>
+            <Button onClick={() => setOpened(false)}>Close</Button>
+          </Stack>
+        )}
+      </Modal>
+    </>
+  );
 }
+  
+
