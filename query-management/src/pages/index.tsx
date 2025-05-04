@@ -7,13 +7,9 @@ import {
   type MRT_ColumnDef,
 } from 'mantine-react-table'
 
-import { Text, Modal, Stack, Button, Tooltip } from '@mantine/core'
+import { Text, TextInput, Modal, Stack, Button, Tooltip } from '@mantine/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCheck,
-  faExclamation,
-  faPlus,
-} from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faQuestion, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 type Info = {
   question: string
@@ -65,11 +61,17 @@ export default function Home() {
         Cell: ({ row }) => (
           <div
             style={{
-              backgroundColor: '#d4fcd4',
               width: '100%',
               height: '100%',
               padding: '0.5rem',
               boxSizing: 'border-box',
+              backgroundColor:
+                row.original.query && row.original.query.status === 'OPEN'
+                  ? 'red'
+                  : row.original.query &&
+                    row.original.query.status === 'RESOLVED'
+                  ? 'lightgreen'
+                  : 'transparent',
             }}
           >
             {row.original.query && row.original.query.status === 'OPEN' ? (
@@ -80,13 +82,13 @@ export default function Home() {
                     setOpened(true)
                   }}
                 >
-                  <FontAwesomeIcon icon={faExclamation} />
+                  <FontAwesomeIcon icon={faQuestion} />
                 </button>
               </Tooltip>
             ) : null}
 
-            {row.original.query && row.original.query.status === 'CLOSED' ? (
-              <Tooltip label="View closed query">
+            {row.original.query && row.original.query.status === 'RESOLVED' ? (
+              <Tooltip label="View resolved query">
                 <button
                   onClick={() => {
                     setSelectedRow(row.original)
@@ -129,16 +131,34 @@ export default function Home() {
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
-        title={`Query | ${selectedRow?.question}`}
+        title={
+          selectedRow?.query ? (
+            <strong>Query | {selectedRow?.question}</strong>
+          ) : (
+            <strong>Create a Query | {selectedRow?.question}</strong>
+          )
+        }
       >
         {selectedRow && (
           <Stack>
-            <Text>{selectedRow.query?.status}</Text>
-            <Text>{selectedRow.query?.createdAt}</Text>
-            <Text>
-              <strong>Queries: {selectedRow.query?.title}</strong>
-            </Text>
-            <button>Update Query</button>
+            {selectedRow.query ? (
+              <div>
+                <Text>Query Status: {selectedRow.query?.status}</Text>
+                <Text>Created At: {selectedRow.query?.createdAt}</Text>
+                <Text>{selectedRow.query?.title}</Text>
+              </div>
+            ) : null}
+
+            {selectedRow.query && selectedRow.query.status === 'OPEN' ? (
+              <button>Update Query</button>
+            ) : null}
+            {!selectedRow.query ? (
+              <div>
+                <TextInput placeholder="Add a description here" />
+                <button>Submit</button>
+              </div>
+            ) : null}
+
             <Button onClick={() => setOpened(false)}>Close</Button>
           </Stack>
         )}
