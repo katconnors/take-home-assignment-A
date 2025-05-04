@@ -10,24 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum QueryStatus {
+  OPEN
+  RESOLVED
+}
+
 model FormData {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  question  String
-  answer    String
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  question String
+  answer   String
+  query    Query?
 
   @@map("form_data")
 }
 
-
-
 model Query {
-  id     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title  String
-  description?   String
-  createdAt Date
-  updatedAt Date
-  status String @default(["OPEN","RESOLVED"])
-  formDataId String 
-  formData FormData @relation(fields:[formDataId], references:[id])
-  
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  status      QueryStatus @default(OPEN)
+  formDataId  String      @unique @db.Uuid
+  formData    FormData    @relation(fields: [formDataId], references: [id])
 }
