@@ -37,8 +37,22 @@ export default function Home() {
   const [form, setForm] = useState<Info[]>([])
   const [description, setDescription] = useState('')
 
-  const onCreateQuery = (question, description, id) => {
-    fetch('http://127.0.0.1:8080/query').catch(console.error)
+  const onCreateQuery = (
+    title: string,
+    formDataId: string,
+    description?: string
+  ) => {
+    fetch('http://127.0.0.1:8080/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: title,
+        formDataId,
+        description: description,
+      }),
+    }).catch(console.error)
   }
 
   const onUpdateQuery = (
@@ -203,8 +217,8 @@ export default function Home() {
                   onClick={() =>
                     onCreateQuery(
                       selectedRow.question,
-                      description,
-                      selectedRow.id
+                      selectedRow.id,
+                      description
                     )
                   }
                 >

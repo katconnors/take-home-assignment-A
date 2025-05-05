@@ -28,8 +28,8 @@ async function queryRoutes(app: FastifyInstance) {
         const queryData = await prisma.query.create({
           data: {
             title,
-            description,
             formDataId,
+            description,
           },
         })
         reply.send(queryData)
