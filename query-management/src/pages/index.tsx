@@ -182,7 +182,7 @@ export default function Home() {
             {selectedRow.query ? (
               <div>
                 <Text>Query Status: {selectedRow.query?.status}</Text>
-                <Text>Created At: {selectedRow.query?.createdAt}</Text>
+                <Text>Last Updated: {selectedRow.query?.updatedAt}</Text>
               </div>
             ) : null}
             {selectedRow.query?.status !== 'RESOLVED' ? (
@@ -191,21 +191,27 @@ export default function Home() {
                 placeholder="Add a description here"
                 onChange={e => setDescription(e.currentTarget.value)}
               />
-            ) : null}
+            ) : (
+              <div>{selectedRow.query.description}</div>
+            )}
 
             {selectedRow.query && selectedRow.query.status === 'OPEN' ? (
               <div>
                 <button
-                  onClick={() => onUpdateQuery(selectedRow.id, { description })}
+                  onClick={() => {
+                    onUpdateQuery(selectedRow.id, { description })
+                    window.location.reload()
+                  }}
                 >
                   Update Query
                 </button>
                 <br></br>
                 <br></br>
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     onUpdateQuery(selectedRow.id, { status: 'RESOLVED' })
-                  }
+                    window.location.reload()
+                  }}
                 >
                   Resolve Query
                 </button>
@@ -214,13 +220,14 @@ export default function Home() {
             {!selectedRow.query ? (
               <div>
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     onCreateQuery(
                       selectedRow.question,
                       selectedRow.id,
                       description
                     )
-                  }
+                    window.location.reload()
+                  }}
                 >
                   Create
                 </button>
