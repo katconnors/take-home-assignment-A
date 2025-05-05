@@ -3,11 +3,12 @@
 ## Getting Started
 
 - copy the .env.example file into a .env file
+- `cd server`
 - `docker-compose build`
 - `docker-compose up`
 - `npm run migrate`
 - `npm run seed`
-- `cd query-management`
+- `cd ../client`
 - `npm run dev`
 
 ## Example requests
