@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faQuestion, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 type Info = {
+  id: string
   question: string
   answer: string
   query?: {
@@ -34,6 +35,28 @@ export default function Home() {
   const [opened, setOpened] = useState(false)
   const [selectedRow, setSelectedRow] = useState<Info | null>(null)
   const [form, setForm] = useState<Info[]>([])
+  const [description, setDescription] = useState('')
+
+  const onCreateQuery = (question, description, id) => {
+    fetch('http://127.0.0.1:8080/query').catch(console.error)
+  }
+
+  const onUpdateQuery = (
+    formDataId: string,
+    updatedData: { description?: string; status?: string }
+  ) => {
+    fetch('http://127.0.0.1:8080/query/update', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        formDataId,
+        description: updatedData.description,
+        status: updatedData.status ? 'RESOLVED' : undefined,
+      }),
+    }).catch(console.error)
+  }
 
   useEffect(() => {
     fetch('http://127.0.0.1:8080/form-data')
@@ -79,6 +102,7 @@ export default function Home() {
                 <button
                   onClick={() => {
                     setSelectedRow(row.original)
+                    setDescription(row.original.query?.description ?? '')
                     setOpened(true)
                   }}
                 >
@@ -145,24 +169,47 @@ export default function Home() {
               <div>
                 <Text>Query Status: {selectedRow.query?.status}</Text>
                 <Text>Created At: {selectedRow.query?.createdAt}</Text>
-                {selectedRow.query.status === 'OPEN' ? (
-                  <TextInput placeholder={selectedRow.query?.title} />
-                ) : null}
               </div>
+            ) : null}
+            {selectedRow.query?.status !== 'RESOLVED' ? (
+              <TextInput
+                value={description}
+                placeholder="Add a description here"
+                onChange={e => setDescription(e.currentTarget.value)}
+              />
             ) : null}
 
             {selectedRow.query && selectedRow.query.status === 'OPEN' ? (
               <div>
-                <button>Update Query</button>
+                <button
+                  onClick={() => onUpdateQuery(selectedRow.id, { description })}
+                >
+                  Update Query
+                </button>
                 <br></br>
                 <br></br>
-                <button>Resolve Query</button>
+                <button
+                  onClick={() =>
+                    onUpdateQuery(selectedRow.id, { status: 'RESOLVED' })
+                  }
+                >
+                  Resolve Query
+                </button>
               </div>
             ) : null}
             {!selectedRow.query ? (
               <div>
-                <TextInput placeholder="Add a description here" />
-                <button>Create</button>
+                <button
+                  onClick={() =>
+                    onCreateQuery(
+                      selectedRow.question,
+                      description,
+                      selectedRow.id
+                    )
+                  }
+                >
+                  Create
+                </button>
               </div>
             ) : null}
 
