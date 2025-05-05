@@ -1,29 +1,11 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import { useMemo, useState, useEffect } from "react";
-import {
-  MantineReactTable,
-  useMantineReactTable,
-  type MRT_ColumnDef,
-} from "mantine-react-table";
+import { useState, useEffect } from "react";
+import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 
 import { Text, TextInput, Modal, Stack, Button, Tooltip } from "@mantine/core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faQuestion, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { Info, getColumns } from "./columns";
 
-type Info = {
-  id: string;
-  question: string;
-  answer: string;
-  query?: {
-    id: string;
-    title: string;
-    description?: string;
-    createdAt: string;
-    updatedAt: string;
-    status: string;
-  };
-};
 type FormDataResponse = {
   data: {
     formData: Info[];
@@ -32,10 +14,12 @@ type FormDataResponse = {
 
 export default function Home() {
   //should be memoized or stable
-  const [opened, setOpened] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<Info | null>(null);
+
   const [form, setForm] = useState<Info[]>([]);
+
+  const [selectedRow, setSelectedRow] = useState<Info | null>(null);
   const [description, setDescription] = useState("");
+  const [opened, setOpened] = useState(false);
 
   const onCreateQuery = (
     title: string,
@@ -84,83 +68,8 @@ export default function Home() {
 
   //refactor
 
-  const columns = useMemo<MRT_ColumnDef<Info>[]>(
-    () => [
-      {
-        accessorKey: "question",
-        header: "Question",
-      },
-      {
-        accessorKey: "answer",
-        header: "Answer",
-      },
-
-      {
-        header: "Queries",
-        Cell: ({ row }) => (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              padding: "0.5rem",
-              boxSizing: "border-box",
-              backgroundColor:
-                row.original.query && row.original.query.status === "OPEN"
-                  ? "red"
-                  : row.original.query &&
-                    row.original.query.status === "RESOLVED"
-                  ? "lightgreen"
-                  : "transparent",
-            }}
-          >
-            {row.original.query && row.original.query.status === "OPEN" ? (
-              <Tooltip label="View/Update Open Query">
-                <button
-                  onClick={() => {
-                    setSelectedRow(row.original);
-                    setDescription(row.original.query?.description ?? "");
-                    setOpened(true);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faQuestion} />
-                </button>
-              </Tooltip>
-            ) : null}
-
-            {row.original.query && row.original.query.status === "RESOLVED" ? (
-              <Tooltip label="View Resolved Query">
-                <button
-                  onClick={() => {
-                    setSelectedRow(row.original);
-                    setOpened(true);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faCheck} />
-                </button>
-              </Tooltip>
-            ) : null}
-
-            {!row.original.query ? (
-              <Tooltip label="Create Query">
-                <button
-                  onClick={() => {
-                    setSelectedRow(row.original);
-                    setOpened(true);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faPlus} />
-                </button>
-              </Tooltip>
-            ) : null}
-          </div>
-        ),
-      },
-    ],
-    []
-  );
-
   const table = useMantineReactTable({
-    columns,
+    columns: getColumns(setSelectedRow, setDescription, setOpened),
     data: form, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
   });
 
@@ -184,7 +93,14 @@ export default function Home() {
             {selectedRow.query ? (
               <div>
                 <Text>Query Status: {selectedRow.query?.status}</Text>
-                <Text>Last Updated: {selectedRow.query?.updatedAt}</Text>
+                <Text>
+                  Last Updated:{" "}
+                  {selectedRow.query?.updatedAt &&
+                    new Intl.DateTimeFormat("en-US", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(new Date(selectedRow.query.updatedAt))}
+                </Text>
               </div>
             ) : null}
             {selectedRow.query?.status !== "RESOLVED" ? (
