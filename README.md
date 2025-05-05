@@ -13,14 +13,14 @@
 
 ## Example requests
 
-Endpoint 1: View form data and queries
+Endpoint 1 example: View form data and queries
 
 ```bash
 curl --location 'http://127.0.0.1:8080/form-data' --header 'Content-Type: application/json'
 
 ```
 
-Endpoint 2: Create a query
+Endpoint 2 example: Create a query
 
 ```bash
 curl --location 'http://127.0.0.1:8080/query' \
@@ -28,17 +28,27 @@ curl --location 'http://127.0.0.1:8080/query' \
 --data '{
   "title": "Test title",
   "description": "test description",
-  "formDataId": "312e3769-1ecf-4c30-b3cf-289a8138cff6"
+  "formDataId": "f67b569e-c959-4474-9176-0eee287839a6"
 }'
 ```
 
-Endpoint 3: Update query- either status or description
+Endpoint 3 examples: Update query- either status or description
 
 ```bash
 curl --location --request PATCH 'http://127.0.0.1:8080/query/update' \
 --header 'Content-Type: application/json' \
 --data '{
-  "formDataId": "258186a2-dbd9-450b-b088-edb9a6919612",
-  "status":"test"
+  "formDataId": "f67b569e-c959-4474-9176-0eee287839a6",
+  "description": "updated description"
+
+}'
+```
+
+```bash
+curl --location --request PATCH 'http://127.0.0.1:8080/query/update' \
+--header 'Content-Type: application/json' \
+--data '{
+  "formDataId": "f67b569e-c959-4474-9176-0eee287839a6",
+  "status":"RESOLVED"
 }'
 ```
