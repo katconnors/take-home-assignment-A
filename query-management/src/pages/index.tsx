@@ -75,7 +75,7 @@ export default function Home() {
             }}
           >
             {row.original.query && row.original.query.status === 'OPEN' ? (
-              <Tooltip label="View/update open query">
+              <Tooltip label="View/Update Open Query">
                 <button
                   onClick={() => {
                     setSelectedRow(row.original)
@@ -88,7 +88,7 @@ export default function Home() {
             ) : null}
 
             {row.original.query && row.original.query.status === 'RESOLVED' ? (
-              <Tooltip label="View resolved query">
+              <Tooltip label="View Resolved Query">
                 <button
                   onClick={() => {
                     setSelectedRow(row.original)
@@ -101,7 +101,7 @@ export default function Home() {
             ) : null}
 
             {!row.original.query ? (
-              <Tooltip label="Create query">
+              <Tooltip label="Create Query">
                 <button
                   onClick={() => {
                     setSelectedRow(row.original)
@@ -145,17 +145,24 @@ export default function Home() {
               <div>
                 <Text>Query Status: {selectedRow.query?.status}</Text>
                 <Text>Created At: {selectedRow.query?.createdAt}</Text>
-                <Text>{selectedRow.query?.title}</Text>
+                {selectedRow.query.status === 'OPEN' ? (
+                  <TextInput placeholder={selectedRow.query?.title} />
+                ) : null}
               </div>
             ) : null}
 
             {selectedRow.query && selectedRow.query.status === 'OPEN' ? (
-              <button>Update Query</button>
+              <div>
+                <button>Update Query</button>
+                <br></br>
+                <br></br>
+                <button>Resolve Query</button>
+              </div>
             ) : null}
             {!selectedRow.query ? (
               <div>
                 <TextInput placeholder="Add a description here" />
-                <button>Submit</button>
+                <button>Create</button>
               </div>
             ) : null}
 
