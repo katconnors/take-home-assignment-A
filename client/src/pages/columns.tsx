@@ -79,6 +79,7 @@ export const getColumns = (
           <Tooltip label="Create Query">
             <button
               onClick={() => {
+                setDescription("");
                 setSelectedRow(row.original);
                 setOpened(true);
               }}
