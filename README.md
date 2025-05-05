@@ -1,6 +1,6 @@
 # take-home-assignment-A
 
-## Getting Started
+## Getting Started: Backend and Frontend Setup
 
 - copy the .env.example file into a .env file
 - `cd server`
@@ -32,7 +32,7 @@ curl --location 'http://127.0.0.1:8080/query' \
 }'
 ```
 
-Endpoint 3 examples: Update query- either status or description
+Endpoint 3 examples: Update query- either description or status
 
 ```bash
 curl --location --request PATCH 'http://127.0.0.1:8080/query/update' \
