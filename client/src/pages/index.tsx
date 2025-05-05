@@ -1,123 +1,125 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-import { useMemo, useState, useEffect } from 'react'
+import Image from "next/image";
+import styles from "./page.module.css";
+import { useMemo, useState, useEffect } from "react";
 import {
   MantineReactTable,
   useMantineReactTable,
   type MRT_ColumnDef,
-} from 'mantine-react-table'
+} from "mantine-react-table";
 
-import { Text, TextInput, Modal, Stack, Button, Tooltip } from '@mantine/core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faQuestion, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { Text, TextInput, Modal, Stack, Button, Tooltip } from "@mantine/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faQuestion, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 type Info = {
-  id: string
-  question: string
-  answer: string
+  id: string;
+  question: string;
+  answer: string;
   query?: {
-    id: string
-    title: string
-    description?: string
-    createdAt: string
-    updatedAt: string
-    status: string
-  }
-}
+    id: string;
+    title: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+    status: string;
+  };
+};
 type FormDataResponse = {
   data: {
-    formData: Info[]
-  }
-}
+    formData: Info[];
+  };
+};
 
 export default function Home() {
   //should be memoized or stable
-  const [opened, setOpened] = useState(false)
-  const [selectedRow, setSelectedRow] = useState<Info | null>(null)
-  const [form, setForm] = useState<Info[]>([])
-  const [description, setDescription] = useState('')
+  const [opened, setOpened] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<Info | null>(null);
+  const [form, setForm] = useState<Info[]>([]);
+  const [description, setDescription] = useState("");
 
   const onCreateQuery = (
     title: string,
     formDataId: string,
     description?: string
   ) => {
-    fetch('http://127.0.0.1:8080/query', {
-      method: 'POST',
+    fetch("http://127.0.0.1:8080/query", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         title: title,
         formDataId,
         description: description,
       }),
-    }).catch(console.error)
-  }
+    }).catch(console.error);
+  };
 
   const onUpdateQuery = (
     formDataId: string,
     updatedData: { description?: string; status?: string }
   ) => {
-    fetch('http://127.0.0.1:8080/query/update', {
-      method: 'PATCH',
+    fetch("http://127.0.0.1:8080/query/update", {
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         formDataId,
         description: updatedData.description,
-        status: updatedData.status ? 'RESOLVED' : undefined,
+        status: updatedData.status ? "RESOLVED" : undefined,
       }),
-    }).catch(console.error)
-  }
+    }).catch(console.error);
+  };
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8080/form-data')
-      .then(res => res.json())
+    fetch("http://127.0.0.1:8080/form-data")
+      .then((res) => res.json())
       .then((data: FormDataResponse) => {
-        const questionAnswer = data.data.formData
-        setForm(questionAnswer)
+        const questionAnswer = data.data.formData;
+        setForm(questionAnswer);
       })
-      .catch(console.error)
-  }, [])
+      .catch(console.error);
+  }, []);
+
+  //refactor
 
   const columns = useMemo<MRT_ColumnDef<Info>[]>(
     () => [
       {
-        accessorKey: 'question',
-        header: 'Question',
+        accessorKey: "question",
+        header: "Question",
       },
       {
-        accessorKey: 'answer',
-        header: 'Answer',
+        accessorKey: "answer",
+        header: "Answer",
       },
 
       {
-        header: 'Queries',
+        header: "Queries",
         Cell: ({ row }) => (
           <div
             style={{
-              width: '100%',
-              height: '100%',
-              padding: '0.5rem',
-              boxSizing: 'border-box',
+              width: "100%",
+              height: "100%",
+              padding: "0.5rem",
+              boxSizing: "border-box",
               backgroundColor:
-                row.original.query && row.original.query.status === 'OPEN'
-                  ? 'red'
+                row.original.query && row.original.query.status === "OPEN"
+                  ? "red"
                   : row.original.query &&
-                    row.original.query.status === 'RESOLVED'
-                  ? 'lightgreen'
-                  : 'transparent',
+                    row.original.query.status === "RESOLVED"
+                  ? "lightgreen"
+                  : "transparent",
             }}
           >
-            {row.original.query && row.original.query.status === 'OPEN' ? (
+            {row.original.query && row.original.query.status === "OPEN" ? (
               <Tooltip label="View/Update Open Query">
                 <button
                   onClick={() => {
-                    setSelectedRow(row.original)
-                    setDescription(row.original.query?.description ?? '')
-                    setOpened(true)
+                    setSelectedRow(row.original);
+                    setDescription(row.original.query?.description ?? "");
+                    setOpened(true);
                   }}
                 >
                   <FontAwesomeIcon icon={faQuestion} />
@@ -125,12 +127,12 @@ export default function Home() {
               </Tooltip>
             ) : null}
 
-            {row.original.query && row.original.query.status === 'RESOLVED' ? (
+            {row.original.query && row.original.query.status === "RESOLVED" ? (
               <Tooltip label="View Resolved Query">
                 <button
                   onClick={() => {
-                    setSelectedRow(row.original)
-                    setOpened(true)
+                    setSelectedRow(row.original);
+                    setOpened(true);
                   }}
                 >
                   <FontAwesomeIcon icon={faCheck} />
@@ -142,8 +144,8 @@ export default function Home() {
               <Tooltip label="Create Query">
                 <button
                   onClick={() => {
-                    setSelectedRow(row.original)
-                    setOpened(true)
+                    setSelectedRow(row.original);
+                    setOpened(true);
                   }}
                 >
                   <FontAwesomeIcon icon={faPlus} />
@@ -155,12 +157,12 @@ export default function Home() {
       },
     ],
     []
-  )
+  );
 
   const table = useMantineReactTable({
     columns,
     data: form, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
-  })
+  });
 
   return (
     <>
@@ -185,22 +187,22 @@ export default function Home() {
                 <Text>Last Updated: {selectedRow.query?.updatedAt}</Text>
               </div>
             ) : null}
-            {selectedRow.query?.status !== 'RESOLVED' ? (
+            {selectedRow.query?.status !== "RESOLVED" ? (
               <TextInput
                 value={description}
                 placeholder="Add a description here"
-                onChange={e => setDescription(e.currentTarget.value)}
+                onChange={(e) => setDescription(e.currentTarget.value)}
               />
             ) : (
               <div>{selectedRow.query.description}</div>
             )}
 
-            {selectedRow.query && selectedRow.query.status === 'OPEN' ? (
+            {selectedRow.query && selectedRow.query.status === "OPEN" ? (
               <div>
                 <button
                   onClick={() => {
-                    onUpdateQuery(selectedRow.id, { description })
-                    window.location.reload()
+                    onUpdateQuery(selectedRow.id, { description });
+                    window.location.reload();
                   }}
                 >
                   Update Query
@@ -209,8 +211,8 @@ export default function Home() {
                 <br></br>
                 <button
                   onClick={() => {
-                    onUpdateQuery(selectedRow.id, { status: 'RESOLVED' })
-                    window.location.reload()
+                    onUpdateQuery(selectedRow.id, { status: "RESOLVED" });
+                    window.location.reload();
                   }}
                 >
                   Resolve Query
@@ -225,8 +227,8 @@ export default function Home() {
                       selectedRow.question,
                       selectedRow.id,
                       description
-                    )
-                    window.location.reload()
+                    );
+                    window.location.reload();
                   }}
                 >
                   Create
@@ -239,5 +241,5 @@ export default function Home() {
         )}
       </Modal>
     </>
-  )
+  );
 }

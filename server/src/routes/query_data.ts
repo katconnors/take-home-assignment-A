@@ -15,7 +15,6 @@ async function queryRoutes(app: FastifyInstance) {
   const log = app.log.child({ component: 'queryRoutes' })
 
   // ENDPOINT 2: Create a new query.
-  //make sure to use the question from the selected row as the title
 
   app.post<{
     Body: initialQueryData
@@ -42,7 +41,6 @@ async function queryRoutes(app: FastifyInstance) {
 
   // ENDPOINT 3: Update an existing query by ID.
   // will include ability to change status as well as the description
-  // make sure to change the updated date as well
 
   app.patch<{
     Body: updatedQueryData
