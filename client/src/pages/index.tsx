@@ -1,9 +1,7 @@
-import Image from "next/image";
-import styles from "./page.module.css";
 import { useState, useEffect } from "react";
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 
-import { Text, TextInput, Modal, Stack, Button, Tooltip } from "@mantine/core";
+import { Text, TextInput, Modal, Stack, Button } from "@mantine/core";
 import { Info, getColumns } from "./columns";
 
 type FormDataResponse = {
