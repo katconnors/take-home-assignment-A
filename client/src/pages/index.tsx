@@ -64,8 +64,6 @@ export default function Home() {
       .catch(console.error);
   }, []);
 
-  //refactor
-
   const table = useMantineReactTable({
     columns: getColumns(setSelectedRow, setDescription, setOpened),
     data: form, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
