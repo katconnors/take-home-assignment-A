@@ -7,6 +7,7 @@ const client = new PrismaClient()
 const deleteAllRecords = async () => {
   // Deletion order is important due to non-null relation constraints.
 
+  await client.query.deleteMany()
   await client.formData.deleteMany()
 
   console.log('All records deleted')
