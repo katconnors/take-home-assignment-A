@@ -1,7 +1,7 @@
 import { faCheck, faQuestion, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type MRT_ColumnDef } from "mantine-react-table";
-import { Tooltip } from "@mantine/core";
+import { Tooltip, Button } from "@mantine/core";
 
 export type Info = {
   id: string;
@@ -21,9 +21,9 @@ export type Info = {
  * Returns an array of columns for a table, and sets up UI behavior
  */
 export const getColumns = (
-  setSelectedRow: React.Dispatch<React.SetStateAction<Info | null>>,
-  setDescription: React.Dispatch<React.SetStateAction<string>>,
-  setOpened: React.Dispatch<React.SetStateAction<boolean>>
+  setSelectedRow: (formData: Info) => void,
+  setDescription: (description: string) => void,
+  openModal: () => void
 ): MRT_ColumnDef<Info>[] => [
   {
     accessorKey: "question",
@@ -33,7 +33,6 @@ export const getColumns = (
     accessorKey: "answer",
     header: "Answer",
   },
-
   {
     header: "Queries",
     Cell: ({ row }) => (
@@ -43,52 +42,48 @@ export const getColumns = (
           height: "100%",
           padding: "0.5rem",
           boxSizing: "border-box",
-          backgroundColor:
-            row.original.query && row.original.query.status === "OPEN"
-              ? "red"
-              : row.original.query && row.original.query.status === "RESOLVED"
-              ? "lightgreen"
-              : "transparent",
         }}
       >
         {row.original.query && row.original.query.status === "OPEN" ? (
           <Tooltip label="View/Update Open Query">
-            <button
+            <Button
               onClick={() => {
                 setSelectedRow(row.original);
                 setDescription(row.original.query?.description ?? "");
-                setOpened(true);
+                openModal();
               }}
+              color="red"
             >
               <FontAwesomeIcon icon={faQuestion} />
-            </button>
+            </Button>
           </Tooltip>
         ) : null}
 
         {row.original.query && row.original.query.status === "RESOLVED" ? (
           <Tooltip label="View Resolved Query">
-            <button
+            <Button
               onClick={() => {
                 setSelectedRow(row.original);
-                setOpened(true);
+                openModal();
               }}
+              color="green"
             >
               <FontAwesomeIcon icon={faCheck} />
-            </button>
+            </Button>
           </Tooltip>
         ) : null}
 
         {!row.original.query ? (
           <Tooltip label="Create Query">
-            <button
+            <Button
               onClick={() => {
                 setDescription("");
                 setSelectedRow(row.original);
-                setOpened(true);
+                openModal();
               }}
             >
               <FontAwesomeIcon icon={faPlus} />
-            </button>
+            </Button>
           </Tooltip>
         ) : null}
       </div>

@@ -14,7 +14,7 @@ async function queryRoutes(app: FastifyInstance) {
 
   const log = app.log.child({ component: 'queryRoutes' })
 
-  // ENDPOINT 2: Create a new query.
+  // ENDPOINT 2: Create a new query
 
   app.post<{
     Body: initialQueryData
@@ -39,7 +39,7 @@ async function queryRoutes(app: FastifyInstance) {
     },
   })
 
-  // ENDPOINT 3: Update an existing query by ID.
+  // ENDPOINT 3: Update an existing query by ID
   // will include ability to change status as well as the description
 
   app.patch<{

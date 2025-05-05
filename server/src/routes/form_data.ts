@@ -10,6 +10,8 @@ async function formDataRoutes(app: FastifyInstance) {
 
   const log = app.log.child({ component: 'formDataRoutes' })
 
+  // ENDPOINT 1: View form data and queries
+
   app.get<{
     Reply: ICountedFormData
   }>('', {

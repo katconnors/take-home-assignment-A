@@ -4,6 +4,8 @@ import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { Text, TextInput, Modal, Stack, Button } from "@mantine/core";
 import { Info, getColumns } from "./columns";
 
+const API_HOST = "http://127.0.0.1:8080";
+
 type FormDataResponse = {
   data: {
     formData: Info[];
@@ -25,7 +27,7 @@ export default function Home() {
     formDataId: string,
     description?: string
   ) => {
-    fetch("http://127.0.0.1:8080/query", {
+    fetch(`${API_HOST}/query`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +44,7 @@ export default function Home() {
     formDataId: string,
     updatedData: { description?: string; status?: string }
   ) => {
-    fetch("http://127.0.0.1:8080/query/update", {
+    fetch(`${API_HOST}/query/update`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +58,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8080/form-data")
+    fetch(`${API_HOST}/form-data`)
       .then((res) => res.json())
       .then((data: FormDataResponse) => {
         const questionAnswer = data.data.formData;
@@ -66,7 +68,7 @@ export default function Home() {
   }, []);
 
   const table = useMantineReactTable({
-    columns: getColumns(setSelectedRow, setDescription, setOpened),
+    columns: getColumns(setSelectedRow, setDescription, () => setOpened(true)),
     data: form,
   });
 
@@ -112,29 +114,29 @@ export default function Home() {
 
             {selectedRow.query && selectedRow.query.status === "OPEN" ? (
               <div>
-                <button
+                <Button
                   onClick={() => {
                     onUpdateQuery(selectedRow.id, { description });
                     window.location.reload();
                   }}
                 >
                   Update Query
-                </button>
+                </Button>
                 <br></br>
                 <br></br>
-                <button
+                <Button
                   onClick={() => {
                     onUpdateQuery(selectedRow.id, { status: "RESOLVED" });
                     window.location.reload();
                   }}
                 >
                   Resolve Query
-                </button>
+                </Button>
               </div>
             ) : null}
             {!selectedRow.query ? (
               <div>
-                <button
+                <Button
                   onClick={() => {
                     onCreateQuery(
                       selectedRow.question,
@@ -145,7 +147,7 @@ export default function Home() {
                   }}
                 >
                   Create
-                </button>
+                </Button>
               </div>
             ) : null}
 
