@@ -16,6 +16,3 @@ function build(opts = {}) {
 }
 
 export default build
-
-// optional endpoint 4
-// delete query
