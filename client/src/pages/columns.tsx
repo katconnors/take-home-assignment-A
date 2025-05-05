@@ -17,6 +17,9 @@ export type Info = {
   };
 };
 
+/**
+ * Returns an array of columns for a table, and sets up UI behavior
+ */
 export const getColumns = (
   setSelectedRow: React.Dispatch<React.SetStateAction<Info | null>>,
   setDescription: React.Dispatch<React.SetStateAction<string>>,

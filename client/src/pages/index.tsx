@@ -11,8 +11,9 @@ type FormDataResponse = {
 };
 
 export default function Home() {
-  //should be memoized or stable
-
+  /**
+   * Main app component that manages viewing data and creating/updating queries.
+   */
   const [form, setForm] = useState<Info[]>([]);
 
   const [selectedRow, setSelectedRow] = useState<Info | null>(null);
@@ -66,7 +67,7 @@ export default function Home() {
 
   const table = useMantineReactTable({
     columns: getColumns(setSelectedRow, setDescription, setOpened),
-    data: form, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    data: form,
   });
 
   return (
